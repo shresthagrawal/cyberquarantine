@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request, jsonify
+import pickle
 import numpy
 import json 
 
@@ -88,4 +89,26 @@ def get_status():
 
 
 if __name__ == '__main__':
-    app.run(port=8000, host='0.0.0.0')
+    file = open('data', 'rb') 
+    db = pickle.load(file) 
+    if 'susceptible' in db:
+        susceptible = db['susceptible']
+        infected = db['infected']
+        vacinated = db['vacinated']
+        medication = db['medication']
+        vacination = db['vacination']
+    file.close()
+
+    try:
+        app.run(port=8000, host='0.0.0.0')
+    finally:
+        file = open('data', 'wb')
+        print("Byy..")
+        pickle.dump({
+            'susceptible': susceptible,
+            'infected': infected,
+            'vacinated': vacinated,
+            'vacination': vacination,
+            'medication': medication
+            }, file)
+        file.close()                    

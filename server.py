@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import request, jsonify
 import pickle
-import numpy
+import numpy as np
 import json 
 
 # from flask_cors import CORS
@@ -86,6 +86,26 @@ def get_status():
     elif data['id'] in vacinated:
         return jsonify("vaccinated")
     return jsonify("susceptible")
+
+@app.route('/heatmap', methods=['GET'])
+def get_heat_map():
+    data = request.get_json()
+
+    xs = np.linspace(data['loc'][0] - data['delta'],
+                    data['loc'][0] + data['delta'],
+                    data['density'])
+    ys = np.linspace(data['loc'][1] - data['delta'],
+                    data['loc'][1] + data['delta'],
+                    data['density'])
+    res = []
+    for y in ys:
+        for x in xs:
+            res.append({
+                'x': x,
+                'y': y,
+                'collision' : detect_collision([x, y])
+                }) 
+    return jsonify(res)
 
 
 if __name__ == '__main__':

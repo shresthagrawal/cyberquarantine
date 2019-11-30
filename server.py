@@ -11,6 +11,9 @@ app = Flask(__name__)
 
 susceptible = {}
 infected = {}
+vacinated = []
+vacination = []
+medication = []
 
 
 def check_dist(loc1, loc2, th=1):
@@ -47,9 +50,41 @@ def log_location():
 def get_location():
     return jsonify({'infected': infected, 'susceptible': susceptible})
 
+@app.route('/vacination/add', methods=['POST'])
+def add_vacination():
+    data = request.get_json()
+    vacination.append(data['loc'])
+    return jsonify(vacination)
+
+@app.route('/vacination/get', methods=['GET'])
+def get_vacination():
+    return jsonify(vacination)
+
+@app.route('/vacinated/add', methods=['POST'])
+def add_vacinated():
+    data = request.get_json()
+    vacinated.append(data['id'])
+    return jsonify("Success")
+
+@app.route('/medication/add', methods=['POST'])
+def add_medication():
+    data = request.get_json()
+    medication.append(data['loc'])
+    return jsonify(medication)
+
+@app.route('/medication/get', methods=['GET'])
+def get_medication():
+    return jsonify(medication)
 
 
-
+@app.route('/status', methods=['GET'])
+def get_status():
+    data = request.get_json()
+    if data['id'] in infected:
+        return jsonify("infected")
+    elif data['id'] in vacinated:
+        return jsonify("vaccinated")
+    return jsonify("susceptible")
 
 
 if __name__ == '__main__':
